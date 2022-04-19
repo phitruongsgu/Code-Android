@@ -68,6 +68,7 @@
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/rfid/app/CallApi.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/rfid/app/RFIDScanActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/rfid/app/RFIDScanActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/rfid/app/RestAPI.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/rfid/app/RestAPI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_rfid_scan.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_rfid_scan.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -90,6 +90,17 @@
             android:textColor="@color/white"
             android:textSize="15sp" />
 
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_bg"
+            android:text="@string/btView"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
     </LinearLayout>
 
     <View
@@ -144,13 +155,6 @@
             android:textStyle="bold" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/buttonSave"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_marginBottom="0dp"
-        android:text="SaveData" />
 
     <View
         android:layout_width="match_parent"
