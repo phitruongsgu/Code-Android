@@ -20,13 +20,21 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonArray;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.BuildConfig;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.rscja.deviceapi.DeviceConfiguration;
@@ -37,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -118,6 +127,7 @@ public class RFIDScanActivity extends Activity {
             UIHelper.initSound(RFIDScanActivity.this);
             initUHF();
         } catch (Exception ex) {
+            System.out.println("Lỗi onCreate");
             UIHelper.showExceptionError(RFIDScanActivity.this, ex);
         }
     }
@@ -129,6 +139,7 @@ public class RFIDScanActivity extends Activity {
                 try {
                     mReader = RFIDWithUHFUART.getInstance();
                 } catch (Exception ex) {
+                    System.out.println("Lỗi initUHF");
                     UIHelper.showExceptionError(RFIDScanActivity.this, ex);
                     return;
                 }
@@ -154,6 +165,7 @@ public class RFIDScanActivity extends Activity {
                 return mReader.init();
             }
             catch (Exception ex){
+                System.out.println("Lỗi InitTask");
                 return false;
             }
         }
@@ -301,32 +313,88 @@ public class RFIDScanActivity extends Activity {
     private class BtnSaveClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            RequestParams rp = new RequestParams();
+
             tagList.forEach((element) -> {
-                rp.add("product_instance_id", element.get("tagUii"));
-                rp.add("product_line_id", element.get("tagRssi"));
-                String url = "ProductInstance/AddProductInstance";
-                RestAPI.post(url, rp, new AsyncHttpResponseHandler() {
 
-                    @Override
-                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
-                        Log.d("asd", "---------------- this is response : " + responseBody);
-                        try {
-                            JSONObject serverResp = new JSONObject(responseBody.toString());
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                RequestQueue requestQueue = Volley.newRequestQueue(RFIDScanActivity.this);
+                String URL = "http://192.168.9.168:8088/ProductInstance/AddProductInstance";
+                JSONObject jsonBody = new JSONObject();
+
+                try {
+                    jsonBody.put("product_instance_id", element.get("TagUii"));
+                    jsonBody.put("product_line_id", element.get("TagRssi"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                    final String requestBody = jsonBody.toString();
+
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.i("VOLLEY", response);
                         }
-                    }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("VOLLEY", error.toString());
+                        }
+                    }) {
+                        @Override
+                        public String getBodyContentType() {
+                            return "application/json; charset=utf-8";
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+                        @Override
+                        public byte[] getBody() throws AuthFailureError {
+                            try {
+                                return requestBody == null ? null : requestBody.getBytes("utf-8");
+                            } catch (UnsupportedEncodingException uee) {
+                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                                return null;
+                            }
+                        }
 
-                        Log.e("call api success", "connect failed");
-                    }
+                        @Override
+                        protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                            String responseString = "";
+                            if (response != null) {
+                                responseString = String.valueOf(response.statusCode);
+                                // can get more details such as response.headers
+                            }
+                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                        }
+                    };
+
+                    requestQueue.add(stringRequest);
 
 
-                });
+                //--
+//                RequestParams rp = new RequestParams();
+//                rp.add("product_instance_id", element.get("tagUii"));
+//                rp.add("product_line_id", element.get("tagRssi"));
+//                String url = "ProductInstance/AddProductInstance";
+//                RestAPI.post(url, rp, new AsyncHttpResponseHandler() {
+//
+//                    @Override
+//                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+//                        Log.d("asd", "---------------- this is response : " + responseBody);
+//                        try {
+//                            JSONObject serverResp = new JSONObject(responseBody.toString());
+//                        } catch (JSONException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
+//
+//                        Log.e("call api failed", "connect failed");
+//                    }
+//
+//
+//                });
+                //--
             });
         }
     }
@@ -463,5 +531,7 @@ public class RFIDScanActivity extends Activity {
             }
         }
     }
+
+    //----------------------
 
 }

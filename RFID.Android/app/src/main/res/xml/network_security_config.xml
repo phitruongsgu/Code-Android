@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <domain-config>
+        <domain includeSubdomains="true">http://192.168.9.156:8088</domain>
+
+    </domain-config>
+</network-security-config>

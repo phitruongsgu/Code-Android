@@ -5,7 +5,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class RestAPI {
-    private static final String BASE_URL = "http://192.168.155.200:64559/";
+    private static final String BASE_URL = "http://192.168.9.156:8088/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
